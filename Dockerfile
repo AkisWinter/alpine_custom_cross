@@ -1,4 +1,4 @@
-FROM alpine:3.19
+FROM alpine:3.22
 
 RUN apk update && apk add --no-cache \
     build-base \
@@ -6,6 +6,7 @@ RUN apk update && apk add --no-cache \
     ninja \
     python3 \
     py3-pip \
+    pipx \
     py3-virtualenv \
     git \
     clang \
@@ -15,8 +16,7 @@ RUN apk update && apk add --no-cache \
     bash
 
 # Install pipx and Conan
-RUN pip install --no-cache-dir pipx && \
-    pipx install conan
+RUN pipx install conan
 
 ENV PATH="/root/.local/bin:${PATH}"
 
