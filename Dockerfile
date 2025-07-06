@@ -6,6 +6,7 @@ RUN apk update && apk add --no-cache \
     ninja \
     python3 \
     py3-pip \
+    py3-virtualenv \
     git \
     clang \
     lld \
@@ -13,11 +14,15 @@ RUN apk update && apk add --no-cache \
     mingw-w64-gcc \
     bash
 
-RUN pip install --upgrade conan
+# Install pipx and Conan
+RUN pip install --no-cache-dir pipx && \
+    pipx install conan
+
+ENV PATH="/root/.local/bin:${PATH}"
 
 RUN conan profile detect
 
-# Profile für Windows Crosscompile
+# Profile for Windows Crosscompile
 RUN conan profile new win64 --detect && \
     conan profile update settings.os=Windows win64 && \
     conan profile update settings.arch=x86_64 win64 && \
@@ -25,7 +30,7 @@ RUN conan profile new win64 --detect && \
     conan profile update settings.compiler.version=$(x86_64-w64-mingw32-gcc -dumpversion) win64 && \
     conan profile update settings.compiler.libcxx=libstdc++11 win64
 
-# Profile für Linux Crosscompile
+# Profile for Linux Crosscompile
 RUN conan profile new linux64 --detect && \
     conan profile update settings.os=Linux linux64 && \
     conan profile update settings.arch=x86_64 linux64 && \
@@ -33,7 +38,7 @@ RUN conan profile new linux64 --detect && \
     conan profile update settings.compiler.version=$(gcc -dumpversion) linux64 && \
     conan profile update settings.compiler.libcxx=libstdc++11 linux64
 
-# Profile für macOS Crosscompile (mittels clang)
+# Profile for macOS Crosscompile (with clang)
 RUN conan profile new macos --detect && \
     conan profile update settings.os=Macos macos && \
     conan profile update settings.arch=x86_64 macos && \
@@ -41,7 +46,7 @@ RUN conan profile new macos --detect && \
     conan profile update settings.compiler.version=$(clang --version | grep version | awk '{print $3}' | cut -d'.' -f1-2) macos && \
     conan profile update settings.compiler.libcxx=libc++ macos
 
-# Anzeigen der Compiler- und CMake-Versionen
+# displey of the Compiler- and CMake-Versions
 RUN echo "--- GCC (Linux) ---" && gcc --version && \
     echo "--- MinGW GCC (Windows) ---" && x86_64-w64-mingw32-gcc --version && \
     echo "--- Clang (macOS) ---" && clang --version && \
