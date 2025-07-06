@@ -15,9 +15,8 @@ RUN apk update && apk add --no-cache \
     mingw-w64-gcc \
     bash \
     libc++ \
-    libc++abi \
     libc++-dev \
-    libc++abi-dev
+    libc++-static
 
 # Install pipx and Conan
 RUN pipx install conan
