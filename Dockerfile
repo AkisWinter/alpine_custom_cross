@@ -22,7 +22,7 @@ RUN conan profile new win64 --detect && \
     conan profile update settings.os=Windows win64 && \
     conan profile update settings.arch=x86_64 win64 && \
     conan profile update settings.compiler=gcc win64 && \
-    conan profile update settings.compiler.version=$(gcc -dumpversion) win64 && \
+    conan profile update settings.compiler.version=$(x86_64-w64-mingw32-gcc -dumpversion) win64 && \
     conan profile update settings.compiler.libcxx=libstdc++11 win64
 
 # Profile für Linux Crosscompile
@@ -40,6 +40,12 @@ RUN conan profile new macos --detect && \
     conan profile update settings.compiler=clang macos && \
     conan profile update settings.compiler.version=$(clang --version | grep version | awk '{print $3}' | cut -d'.' -f1-2) macos && \
     conan profile update settings.compiler.libcxx=libc++ macos
+
+# Anzeigen der Compiler- und CMake-Versionen
+RUN echo "--- GCC (Linux) ---" && gcc --version && \
+    echo "--- MinGW GCC (Windows) ---" && x86_64-w64-mingw32-gcc --version && \
+    echo "--- Clang (macOS) ---" && clang --version && \
+    echo "--- CMake ---" && cmake --version
 
 WORKDIR /app
 
